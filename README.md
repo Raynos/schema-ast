@@ -15,22 +15,38 @@ A bunch of helpers for JSON schema
 ## Example
 
 ```js
-var schemaAst = require("schema-ast");
+var V = require("schema-ast");
 
-// TODO. Show example
+var requestSchema = V.http.Request({
+    method: 'POST',
+    body: {
+        email: V.email(),
+        confirmEmail: V.email(),
+        password: V.string({
+            'minLength': 8,
+            'maxLength': Infinity
+        })
+    }
+});
+
+var responseSchema = V.union([
+    V.http.Response({
+        statusCode: 200,
+        body: schemas.UserModel
+    }),
+    V.http.TypedError({
+        statusCode: 400,
+        type: 'services.user.duplicate-email'
+    }, {
+        email: V.string()
+    }),
+    V.http.TypedError(LoggedInError),
+    V.http.TypedError(EmailNotSameError)
+]);
 ```
 
 ## Docs
 
-### `var someValue = schemaAst(/*arguments*/)`
-
-<!--
-  This is a jsig notation of your interface.
-  https://github.com/Raynos/jsig
--->
-```ocaml
-schema-ast := (arg: Any) => void
-```
 
 // TODO. State what the module does.
 
